@@ -6,4 +6,4 @@ COPY producer.py .
 
 RUN pip install confluent-kafka
 
-CMD ["python", "producer.py"]
+CMD python producer.py && tail -f /dev/null
