@@ -2,7 +2,7 @@ from confluent_kafka import Producer
 
 # Kafka configuration
 config = {
-    'bootstrap.servers': 'localhost:9092',
+    'bootstrap.servers': 'kafka-broker-1:9092',
 }
 
 def delivery_report(err, msg):
@@ -12,17 +12,27 @@ def delivery_report(err, msg):
     else:
         print(f"Message delivered to {msg.topic()} [{msg.partition()}]")
 
-def produce_messages(topic):
+def produce_messages(topics, messages):
     producer = Producer(config)
     try:
-        for i in range(10):  # Producing 10 messages as a demo
-            value = f"Test message {i}"
-            producer.produce(topic, value.encode('utf-8'), callback=delivery_report)
-            producer.flush()  # Ensure all messages are sent
-        print("All messages produced!")
+        # Check topics and create messages depending on the topic
+        for message in messages:
+            topic = message["topic"]
+            if topic not in topics:
+                print(f"Invalid topic: {topic}")
+                continue
+            producer.produce(topic, value=message["value"].encode('utf-8'), callback=delivery_report)
+            producer.flush()
     except Exception as e:
         print(f"Error producing messages: {e}")
 
 if __name__ == "__main__":
-    topic_name = "univalle-ideas"  # Replace with your topic
-    produce_messages(topic_name)
+    topics = ["univalle-ideas", "cosas-misteriosas"]
+    messages = [
+        {"value": "Idea 1", "topic": "univalle-ideas"},
+        {"value": "Idea 2", "topic": "univalle-ideas"},
+        {"value": "Idea 3", "topic": "univalle-ideas"},
+        {"value": "Idea 4", "topic": "cosas-misteriosas"},
+        {"value": "Hecho por Herney", "topic": "cosas-misteriosas"},
+    ]
+    produce_messages(topics, messages)

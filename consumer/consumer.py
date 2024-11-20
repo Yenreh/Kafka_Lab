@@ -2,15 +2,16 @@ from confluent_kafka import Consumer
 
 # Kafka configuration
 config = {
-    'bootstrap.servers': 'localhost:9092',
+    'bootstrap.servers': 'kafka-broker-1:9092',
     'group.id': 'test-group',
     'auto.offset.reset': 'earliest',  # Start reading from the beginning
 }
 
 def consume_messages(topic):
     consumer = Consumer(config)
-    consumer.subscribe([topic])
-    print(f"Subscribed to topic: {topic}")
+    for topic in topics:
+        consumer.subscribe([topic])
+        print(f"Subscribed to topic: {topic}")
     try:
         while True:
             msg = consumer.poll(1.0)  # Poll for messages
@@ -26,5 +27,5 @@ def consume_messages(topic):
         consumer.close()
 
 if __name__ == "__main__":
-    topic_name = "univalle-ideas"  # Replace with your topic
-    consume_messages(topic_name)
+    topics = ["univalle-ideas", "cosas-misteriosas"]
+    consume_messages(topics)
