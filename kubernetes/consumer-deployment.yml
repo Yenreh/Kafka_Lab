@@ -8,6 +8,3 @@ spec:
   containers:
     - name: consumer
       image: yenreh/kafka-consumer:latest
-      env:
-        - name: KAFKA_BROKER
-          value: kafka-broker-1:9092
