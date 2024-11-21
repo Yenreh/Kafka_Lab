@@ -1,30 +1,34 @@
+import logging
 from confluent_kafka import Consumer
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
 
 # Kafka configuration
 config = {
     'bootstrap.servers': 'kafka-broker-1:9092',
     'group.id': 'test-group',
-    'auto.offset.reset': 'earliest',  # Start reading from the beginning
+    'auto.offset.reset': 'earliest',
 }
 
-def consume_messages(topic):
+def consume_messages(topics):
     consumer = Consumer(config)
-    for topic in topics:
-        consumer.subscribe([topic])
-        print(f"Subscribed to topic: {topic}")
+    consumer.subscribe(topics)
+    logging.info(f"Subscribed to topics: {topics}")
     try:
         while True:
-            msg = consumer.poll(1.0)  # Poll for messages
+            msg = consumer.poll(1.0)
             if msg is None:
                 continue
             if msg.error():
-                print(f"Consumer error: {msg.error()}")
+                logging.error(f"Consumer error: {msg.error()}")
                 continue
-            print(f"Received message: {msg.value().decode('utf-8')}")
+            logging.info(f"Received message from {msg.topic()} at offset {msg.offset()}: {msg.value().decode('utf-8')}")
     except KeyboardInterrupt:
-        print("\nStopping consumer...")
+        logging.info("\nStopping consumer...")
     finally:
         consumer.close()
+
 
 if __name__ == "__main__":
     topics = ["univalle-ideas", "cosas-misteriosas"]

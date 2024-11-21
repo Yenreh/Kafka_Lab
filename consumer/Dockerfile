@@ -6,4 +6,4 @@ COPY consumer.py .
 
 RUN pip install confluent-kafka
 
-CMD ["python", "consumer.py"]
+CMD python consumer.py && tail -f /dev/null
